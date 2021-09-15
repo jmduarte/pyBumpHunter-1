@@ -1211,7 +1211,7 @@ class BumpHunter1D:
             weights=Hbkg,
             label="background",
             linewidth=2,
-            color="red",
+            color="red"
         )
         plt.errorbar(
             0.5 * (H[1][1:] + H[1][:-1]),
@@ -1227,14 +1227,12 @@ class BumpHunter1D:
             np.full(2, Bmin),
             np.array([0, H[0][self.min_loc_ar[0]]]),
             "r--",
-            color='red',
             label=("Most signif. window"),
         )
         plt.plot(
             np.full(2, Bmax),
             np.array([0, H[0][self.min_loc_ar[0] + self.min_width_ar[0] - 1]]),
             "r--",
-            color='red'
         )
         if title is not None:
             plt.legend(fontsize='large', loc='upper right', title=title)
