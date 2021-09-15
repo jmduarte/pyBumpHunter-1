@@ -1103,7 +1103,7 @@ class BumpHunter1D:
 
     # Plot the data and bakground histograms with the bump found by BumpHunter highlighted
     @deprecated_arg("useSideBand", "use_sideband")
-    def plot_bump(self, data, bkg, is_hist: bool=False, use_sideband=None, filename=None, useSideBand=None):
+    def plot_bump(self, data, bkg, is_hist: bool=False, use_sideband=None, filename=None, title=None, x_label=None, useSideBand=None):
         """
         Plot the data and bakground histograms with the bump found by BumpHunter highlighted.
 
@@ -1126,6 +1126,16 @@ class BumpHunter1D:
             filename :
                 Name of the file in which the plot will be saved.
                 If None, the plot will be just shown but not saved.
+                Default to None.
+
+            title :
+                Title of the plot, shown in the legend.
+                If None, no title is shown.
+                Default to None.
+
+            x_label :
+                x-axis label.
+                If None, no label is shown.
                 Default to None.
 
             useSideBand : *Deprecated*
@@ -1192,7 +1202,6 @@ class BumpHunter1D:
         gs = grd.GridSpec(2, 1, height_ratios=[4, 1])
 
         pl1 = plt.subplot(gs[0])
-        plt.title("Distributions with bump")
 
         plt.hist(
             H[1][:-1],
@@ -1218,31 +1227,40 @@ class BumpHunter1D:
             np.full(2, Bmin),
             np.array([0, H[0][self.min_loc_ar[0]]]),
             "r--",
-            label=("BUMP"),
+            color='red',
+            label=("Most signif. window"),
         )
         plt.plot(
             np.full(2, Bmax),
             np.array([0, H[0][self.min_loc_ar[0] + self.min_width_ar[0] - 1]]),
             "r--",
+            color='red'
         )
-        plt.legend(fontsize="large")
+        if title is not None:
+            plt.legend(fontsize='large', loc='upper right', title=title)
+        else:
+            plt.legend(fontsize='large', loc='upper right')        
         plt.yscale("log")
         if self.rang is not None:
             plt.xlim(self.rang)
         plt.xticks(fontsize="large")
         plt.yticks(fontsize="large")
+        plt.ylim(0.5*min(H[0]),3*max(H[0]))
         plt.tight_layout()
 
         plt.subplot(gs[1], sharex=pl1)
         plt.hist(H[1][:-1], bins=H[1], range=self.rang, weights=sig)
-        plt.plot(np.full(2, Bmin), np.array([sig.min(), sig.max()]), "r--", linewidth=2)
-        plt.plot(np.full(2, Bmax), np.array([sig.min(), sig.max()]), "r--", linewidth=2)
+        plt.plot(np.full(2, Bmin), np.array([np.round(sig.min())-0.5, np.round(sig.max())+0.5]), "r--", linewidth=2)
+        plt.plot(np.full(2, Bmax), np.array([np.round(sig.min())-0.5, np.round(sig.max())+0.5]), "r--", linewidth=2)
         plt.yticks(
             np.arange(np.round(sig.min()), np.round(sig.max()) + 1, step=1),
             fontsize="large",
         )
-        plt.ylabel("significance", size="large")
+        plt.ylabel("Signif.", size="large")
+        if x_label is not None:
+            plt.xlabel(x_label, size='large')
         plt.xticks(fontsize="large")
+        plt.ylim(np.round(sig.min())-0.5,np.round(sig.max())+0.5)
 
         # Check if the plot should be saved or just displayed
         if filename is None:
