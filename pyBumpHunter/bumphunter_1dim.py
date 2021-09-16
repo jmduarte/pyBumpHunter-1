@@ -1209,18 +1209,18 @@ class BumpHunter1D:
             histtype="step",
             range=self.rang,
             weights=Hbkg,
-            label="background",
+            label="Background",
             linewidth=2,
-            color="red"
+            color="navy"
         )
         plt.errorbar(
             0.5 * (H[1][1:] + H[1][:-1]),
             H[0],
-            xerr=(H[1][1] - H[1][0]) / 2,
             yerr=np.sqrt(H[0]),
             ls="",
-            color="blue",
-            label="data",
+            color="black",
+            marker="o",
+            label="Data",
         )
 
         plt.plot(
@@ -1247,18 +1247,21 @@ class BumpHunter1D:
         plt.tight_layout()
 
         plt.subplot(gs[1], sharex=pl1)
-        plt.hist(H[1][:-1], bins=H[1], range=self.rang, weights=sig)
+        plt.hist(H[1][:-1], bins=H[1], range=self.rang, weights=sig, color='cornflowerblue')
         plt.plot(np.full(2, Bmin), np.array([np.round(sig.min())-0.5, np.round(sig.max())+0.5]), "r--", linewidth=2)
         plt.plot(np.full(2, Bmax), np.array([np.round(sig.min())-0.5, np.round(sig.max())+0.5]), "r--", linewidth=2)
-        plt.yticks(
-            np.arange(np.round(sig.min()), np.round(sig.max()) + 1, step=1),
-            fontsize="large",
-        )
+        if self.rang!=None:
+            plt.plot(self.rang, [0, 0], '-.', linewidth=2., color='gray')
+        if np.round(sig.max()) > 4:
+            plt.yticks(np.arange(np.round(sig.min()),np.round(sig.max())+1,step=2),fontsize="large")
+        else:
+            plt.yticks(np.arange(np.round(sig.min()),np.round(sig.max())+1,step=1),fontsize="large")
         plt.ylabel("Signif.", size="large")
         if x_label is not None:
             plt.xlabel(x_label, size='large')
         plt.xticks(fontsize="large")
         plt.ylim(np.round(sig.min())-0.5,np.round(sig.max())+0.5)
+        plt.ylabel('Events',size='large')
 
         # Check if the plot should be saved or just displayed
         if filename is None:
@@ -1305,7 +1308,7 @@ class BumpHunter1D:
             np.array([0, H[0].max()]),
             "r--",
             linewidth=2,
-            label="data",
+            label="Data",
         )
         plt.legend(fontsize="large")
         plt.xlabel("BumpHunter statistic", size="large")
